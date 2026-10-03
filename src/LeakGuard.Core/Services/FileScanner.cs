@@ -60,74 +60,88 @@ public class FileScanner : IScanner
         ScanMode mode,
         CancellationToken cancellationToken = default)
     {
-        var results = new ConcurrentBag<ScanResult>();
-        var filesScanned = 0L;
-        var sw = Stopwatch.StartNew();
-
-        var pathList = paths.ToList();
-        var totalFiles = CountFiles(pathList, cancellationToken);
-
         try
         {
+            var results = new ConcurrentBag<ScanResult>();
+            var filesScanned = 0L;
+            var sw = Stopwatch.StartNew();
+
+            var pathList = paths.ToList();
+            Console.WriteLine($"[FileScanner] Сканирование {pathList.Count} путей, режим {mode}");
+
+            var totalFiles = CountFiles(pathList, cancellationToken);
+            Console.WriteLine($"[FileScanner] Всего файлов: {totalFiles}");
+
             foreach (var path in pathList)
             {
-                if (cancellationToken.IsCancellationRequested) break;
-
-                if (Directory.Exists(path))
+                try
                 {
-                    try
+                    if (cancellationToken.IsCancellationRequested) break;
+
+                    Console.WriteLine($"[FileScanner] Обработка: {path}");
+
+                    if (Directory.Exists(path))
                     {
-                        var folderResults = await ScanDirectoryAsync(
-                            path, results, cancellationToken, totalFiles);
-                        filesScanned += folderResults;
+                        try
+                        {
+                            var folderResults = await ScanDirectoryAsync(
+                                path, results, cancellationToken, totalFiles);
+                            filesScanned += folderResults;
+                            Console.WriteLine($"[FileScanner] Папка {path}: {folderResults} файлов");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[FileScanner] Ошибка папки {path}: {ex.GetType().Name}: {ex.Message}");
+                        }
                     }
-                    catch (Exception ex)
+                    else if (File.Exists(path))
                     {
-                        // Пропускаем недоступные папки
-                        Console.WriteLine($"Ошибка сканирования папки {path}: {ex.Message}");
+                        try
+                        {
+                            var singleResult = await ScanFileAsync(path, cancellationToken);
+                            foreach (var r in singleResult)
+                                results.Add(r);
+                            filesScanned++;
+                            Console.WriteLine($"[FileScanner] Файл {path}: OK");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[FileScanner] Ошибка файла {path}: {ex.GetType().Name}: {ex.Message}");
+                        }
                     }
+
+                    var progress = new ScanProgress
+                    {
+                        CurrentFolder = path,
+                        FilesScanned = filesScanned,
+                        TotalFiles = totalFiles,
+                        StatusMessage = $"Проверка: {path}",
+                        ProgressPercent = totalFiles > 0 ? (double)filesScanned / totalFiles * 100 : 0
+                    };
+
+                    ProgressChanged?.Invoke(progress);
                 }
-                else if (File.Exists(path))
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        var singleResult = await ScanFileAsync(path, cancellationToken);
-                        foreach (var r in singleResult)
-                            results.Add(r);
-                        filesScanned++;
-                    }
-                    catch (Exception ex)
-                    {
-                        // Пропускаем недоступные файлы
-                        Console.WriteLine($"Ошибка сканирования файла {path}: {ex.Message}");
-                    }
+                    Console.WriteLine($"[FileScanner] Ошибка обработки пути {path}: {ex.GetType().Name}: {ex.Message}");
                 }
-
-                var progress = new ScanProgress
-                {
-                    CurrentFolder = path,
-                    FilesScanned = filesScanned,
-                    TotalFiles = totalFiles,
-                    StatusMessage = $"Проверка: {path}",
-                    ProgressPercent = totalFiles > 0 ? (double)filesScanned / totalFiles * 100 : 0
-                };
-
-                ProgressChanged?.Invoke(progress);
             }
+
+            sw.Stop();
+            Console.WriteLine($"[FileScanner] Сканирование завершено за {sw.Elapsed}. Найдено {results.Count} результатов.");
+
+            return results.ToList();
         }
         catch (OperationCanceledException)
         {
-            // Ожидается при отмене
+            Console.WriteLine("[FileScanner] Сканирование отменено");
+            throw;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка сканирования: {ex.Message}");
+            Console.WriteLine($"[FileScanner] Критическая ошибка: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+            return new List<ScanResult>();
         }
-
-        sw.Stop();
-        Console.WriteLine($"Сканирование завершено за {sw.Elapsed}. Найдено {results.Count} результатов.");
-
-        return results.ToList();
     }
 
     public async Task<List<ScanResult>> ScanQuickAsync(CancellationToken cancellationToken = default)
@@ -175,32 +189,72 @@ public class FileScanner : IScanner
 
         try
         {
+            Console.WriteLine($"[FileScanner] ScanDirectoryAsync: {directory} (depth={depth})");
+
             // Ограничиваем глубину рекурсии 15 уровнями
             if (depth > 15)
-                return count;
-            // Сканируем файлы в текущей директории
-            foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
             {
-                if (cancellationToken.IsCancellationRequested) break;
+                Console.WriteLine($"[FileScanner] Пропуск глубины: {directory}");
+                return count;
+            }
 
-                count++;
-                var fileResults = await ScanFileAsync(file, cancellationToken);
-                foreach (var r in fileResults)
+            // Сканируем файлы в текущей директории
+            try
+            {
+                var files = Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly).ToList();
+                Console.WriteLine($"[FileScanner] Найдено {files.Count} файлов в {directory}");
+
+                foreach (var file in files)
                 {
-                    results.Add(r);
+                    try
+                    {
+                        if (cancellationToken.IsCancellationRequested) break;
+
+                        count++;
+                        var fileResults = await ScanFileAsync(file, cancellationToken);
+                        foreach (var r in fileResults)
+                        {
+                            results.Add(r);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[FileScanner] Ошибка файла {file}: {ex.GetType().Name}");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FileScanner] Ошибка EnumerateFiles {directory}: {ex.GetType().Name}");
             }
 
             // Рекурсивно сканируем поддиректории
-            foreach (var subDir in Directory.EnumerateDirectories(directory))
+            try
             {
-                var dirName = Path.GetFileName(subDir);
-                if (_skippedFolders.Contains(dirName))
-                    continue;
+                var subDirs = Directory.EnumerateDirectories(directory).ToList();
+                Console.WriteLine($"[FileScanner] Найдено {subDirs.Count} подпапок в {directory}");
 
-                if (cancellationToken.IsCancellationRequested) break;
+                foreach (var subDir in subDirs)
+                {
+                    try
+                    {
+                        var dirName = Path.GetFileName(subDir);
+                        if (_skippedFolders.Contains(dirName))
+                            continue;
 
-                count += await ScanDirectoryAsync(subDir, results, cancellationToken, totalFiles, depth + 1);
+                        if (cancellationToken.IsCancellationRequested) break;
+
+                        count += await ScanDirectoryAsync(subDir, results, cancellationToken, totalFiles, depth + 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[FileScanner] Ошибка подпапки {subDir}: {ex.GetType().Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[FileScanner] Ошибка EnumerateDirectories {directory}: {ex.GetType().Name}");
             }
         }
         catch (UnauthorizedAccessException)
@@ -223,12 +277,14 @@ public class FileScanner : IScanner
     {
         try
         {
-            return await ScanFileInternalAsync(filePath, cancellationToken);
+            Console.WriteLine($"[FileScanner] ScanFileAsync: {filePath}");
+            var results = await ScanFileInternalAsync(filePath, cancellationToken);
+            Console.WriteLine($"[FileScanner] ScanFileAsync OK: {filePath} ({results.Count} результатов)");
+            return results;
         }
         catch (Exception ex)
         {
-            // Любая ошибка при сканировании одного файла — пропускаем
-            Console.WriteLine($"Ошибка сканирования {filePath}: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"[FileScanner] ScanFileAsync ERROR: {filePath} - {ex.GetType().Name}: {ex.Message}");
             return new List<ScanResult>();
         }
     }
@@ -333,9 +389,14 @@ public class FileScanner : IScanner
 
         try
         {
+            Console.WriteLine($"[FileScanner] ScanTextContentAsync: {filePath}");
+
             await using var stream = File.OpenRead(filePath);
             if (stream.Length > 5 * 1024 * 1024) // > 5 MB — пропускаем
+            {
+                Console.WriteLine($"[FileScanner] Пропуск большого файла: {filePath}");
                 return results;
+            }
 
             using var reader = new StreamReader(stream, Encoding.UTF8, true, 8192, leaveOpen: true);
             var content = await reader.ReadToEndAsync(cancellationToken);
