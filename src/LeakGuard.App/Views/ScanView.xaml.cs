@@ -80,8 +80,8 @@ public partial class ScanView : UserControl
 
         try
         {
-            var results = await _scanner.ScanAsync(
-                paths, _mode, _cts.Token);
+            var results = await Task.Run(async () =>
+                await _scanner.ScanAsync(paths, _mode, _cts.Token), _cts.Token);
 
             if (_isScanning)
             {
