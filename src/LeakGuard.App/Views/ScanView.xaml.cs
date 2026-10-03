@@ -24,6 +24,8 @@ public partial class ScanView : UserControl
     private bool _isScanning = false;
     private bool _isUnloaded = false;
     private ObservableCollection<ScanResult> _recentFindings = new();
+    private int _lastProgressUpdate = -1;
+    private int _lastResultUpdate = -1;
 
     public ScanView(ScanMode mode, AppSettings settings, LoggingService logging, ReportStorage reportStorage)
     {
@@ -163,6 +165,11 @@ public partial class ScanView : UserControl
     private void OnProgressChanged(ScanProgress progress)
     {
         if (_isUnloaded) return;
+
+        // Throttle: обновляем UI не чаще чем каждые 5% прогресса
+        if (progress.ProgressPercent == _lastProgressUpdate) return;
+        _lastProgressUpdate = (int)progress.ProgressPercent;
+
         Application.Current.Dispatcher.BeginInvoke(() =>
         {
             if (_isUnloaded) return;
@@ -176,6 +183,11 @@ public partial class ScanView : UserControl
     private void OnResultFound(ScanResult result)
     {
         if (_isUnloaded) return;
+
+        // Throttle: обновляем UI не чаще чем каждые 50 результатов
+        if (_lastResultUpdate > 0 && (_lastResultUpdate % 50) != 0) return;
+        _lastResultUpdate++;
+
         Application.Current.Dispatcher.BeginInvoke(() =>
         {
             if (_isUnloaded) return;
