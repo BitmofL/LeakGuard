@@ -349,10 +349,11 @@ public class FileScanner : IScanner
         try
         {
             using var bitmap = new System.Drawing.Bitmap(filePath);
+            var propertyIds = bitmap.PropertyIdList ?? Array.Empty<int>();
 
             // Проверяем GPS-координаты (property tag 0x8825)
             var gpsPropId = 0x8825;
-            if (bitmap.PropertyIdList.Contains(gpsPropId))
+            if (propertyIds.Contains(gpsPropId))
             {
                 var gpsValue = bitmap.GetPropertyItem(gpsPropId);
                 if (gpsValue != null && gpsValue.Value.Length > 0)
@@ -375,7 +376,7 @@ public class FileScanner : IScanner
 
             // Проверяем производителя камеры (property tag 0x010F)
             var makerPropId = 0x010F;
-            if (bitmap.PropertyIdList.Contains(makerPropId))
+            if (propertyIds.Contains(makerPropId))
             {
                 var makerValue = bitmap.GetPropertyItem(makerPropId);
                 if (makerValue != null)
@@ -402,7 +403,7 @@ public class FileScanner : IScanner
 
             // Проверяем модель камеры (property tag 0x0110)
             var modelPropId = 0x0110;
-            if (bitmap.PropertyIdList.Contains(modelPropId))
+            if (propertyIds.Contains(modelPropId))
             {
                 var modelValue = bitmap.GetPropertyItem(modelPropId);
                 if (modelValue != null)

@@ -98,7 +98,7 @@ public partial class ResultsView : UserControl
         ApplyFilters();
     }
 
-    private void BtnExport_Click(object sender, RoutedEventArgs e)
+    private async void BtnExport_Click(object sender, RoutedEventArgs e)
     {
         if (_allResults.Count == 0)
         {
@@ -125,9 +125,12 @@ public partial class ResultsView : UserControl
                 ? ReportFormat.Json
                 : ReportFormat.Html;
 
+            var btn = (Button)sender;
+            btn.IsEnabled = false;
+
             try
             {
-                _reportStorage.SaveReportAsync(_allResults.ToList(), format, dialog.FileName).Wait();
+                await _reportStorage.SaveReportAsync(_allResults.ToList(), format, dialog.FileName);
                 MessageBox.Show($"Отчёт сохранён:\n{dialog.FileName}", "LeakGuard",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 _logging.LogInformation($"Отчёт экспортирован: {dialog.FileName}");
@@ -137,6 +140,10 @@ public partial class ResultsView : UserControl
                 MessageBox.Show($"Ошибка экспорта: {ex.Message}", "LeakGuard",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 _logging.LogError("Ошибка экспорта отчёта", ex);
+            }
+            finally
+            {
+                btn.IsEnabled = true;
             }
         }
     }
@@ -174,6 +181,18 @@ public partial class ResultsView : UserControl
             contentFrame?.Navigate(new Views.DashboardView(_settings, _logging, _reportStorage));
             var statusText = win.FindName("StatusText") as TextBlock;
             statusText?.SetText("Готово к работе");
+        }
+    }
+
+    private void BtnShowPath_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            if (btn.FindName("TxbDetailPath") is TextBlock pathText)
+            {
+                pathText.Visibility = Visibility.Visible;
+                btn.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
