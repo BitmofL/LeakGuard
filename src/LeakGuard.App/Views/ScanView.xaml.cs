@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +34,7 @@ public partial class ScanView : UserControl
         _scanner = new FileScanner();
 
         _recentFindings = new ObservableCollection<ScanResult>();
-        TxtRecentFindings.ItemsSource = _recentFindings;
+        LstRecentFindings.ItemsSource = _recentFindings;
 
         Unloaded += ScanView_Unloaded;
 
@@ -160,7 +161,7 @@ public partial class ScanView : UserControl
 
     private void OnProgressChanged(ScanProgress progress)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Application.Current.Dispatcher.BeginInvoke(() =>
         {
             TxtStatus.Text = progress.StatusMessage;
             TxtProgressText.Text = $"{progress.FilesScanned:N0} / {progress.TotalFiles:N0} файлов";
@@ -171,7 +172,7 @@ public partial class ScanView : UserControl
 
     private void OnResultFound(ScanResult result)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Application.Current.Dispatcher.BeginInvoke(() =>
         {
             _recentFindings.Insert(0, result);
             if (_recentFindings.Count > 50)
@@ -192,7 +193,7 @@ public partial class ScanView : UserControl
         _logging.LogInformation($"Сканирование завершено. Найдено {results.Count} результатов.");
 
         // Переход к результатам
-        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
             var view = new Views.ResultsView(_settings, _logging, _reportStorage);
             var mainWindow = Window.GetWindow(this);
@@ -222,6 +223,63 @@ public partial class ScanView : UserControl
     {
         _cts.Cancel();
         BtnStop.IsEnabled = false;
+    }
+
+    private void LstRecentFindings_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (LstRecentFindings.SelectedItem is ScanResult result)
+        {
+            DetailPanel.Visibility = Visibility.Visible;
+            BtnShowPath.Visibility = Visibility.Collapsed;
+            TxbDetailPath.Text = string.Empty;
+        }
+        else
+        {
+            DetailPanel.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void BtnShowPath_Click(object sender, RoutedEventArgs e)
+    {
+        if (LstRecentFindings.SelectedItem is ScanResult result)
+        {
+            TxbDetailPath.Text = result.FilePath;
+            BtnShowPath.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void BtnOpenLocation_Click(object sender, RoutedEventArgs e)
+    {
+        if (LstRecentFindings.SelectedItem is ScanResult result && !string.IsNullOrEmpty(result.FilePath))
+        {
+            var dir = Path.GetDirectoryName(result.FilePath);
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"/select,\"{result.FilePath}\""
+                });
+            }
+        }
+    }
+
+    private void BtnIgnore_Click(object sender, RoutedEventArgs e)
+    {
+        if (LstRecentFindings.SelectedItem is ScanResult result)
+        {
+            result.IsIgnored = true;
+            _recentFindings.Remove(result);
+            UpdateCounts();
+            DetailPanel.Visibility = Visibility.Collapsed;
+            _logging.LogInformation($"Результат проигнорирован: {result.Id}");
+        }
+    }
+
+    private void BtnCloseDetail_Click(object sender, RoutedEventArgs e)
+    {
+        DetailPanel.Visibility = Visibility.Collapsed;
+        LstRecentFindings.SelectedItem = null;
     }
 
     private void BtnBack_Click(object sender, RoutedEventArgs e)
