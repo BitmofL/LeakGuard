@@ -430,7 +430,7 @@ public class FileScanner : IScanner
 
             // Проверяем дату съёмки (property tag 0x9003)
             var datePropId = 0x9003;
-            if (bitmap.PropertyIdList.Contains(datePropId))
+            if (propertyIds.Contains(datePropId))
             {
                 var dateValue = bitmap.GetPropertyItem(datePropId);
                 if (dateValue != null)
