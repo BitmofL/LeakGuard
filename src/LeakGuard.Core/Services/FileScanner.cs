@@ -221,6 +221,20 @@ public class FileScanner : IScanner
 
     private async Task<List<ScanResult>> ScanFileAsync(string filePath, CancellationToken cancellationToken)
     {
+        try
+        {
+            return await ScanFileInternalAsync(filePath, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // Любая ошибка при сканировании одного файла — пропускаем
+            Console.WriteLine($"Ошибка сканирования {filePath}: {ex.GetType().Name}: {ex.Message}");
+            return new List<ScanResult>();
+        }
+    }
+
+    private async Task<List<ScanResult>> ScanFileInternalAsync(string filePath, CancellationToken cancellationToken)
+    {
         var results = new List<ScanResult>();
         var fileName = Path.GetFileName(filePath);
         var extension = Path.GetExtension(filePath).ToLowerInvariant();
@@ -238,8 +252,8 @@ public class FileScanner : IScanner
                 Confidence = 0.7,
                 Recommendation = "Проверьте содержимое файла. Если это конфиденциальные данные, переместите в защищённое хранилище или удалите.",
                 FileType = extension,
-                FileModifiedDate = File.GetLastWriteTime(filePath),
-                FileSize = new FileInfo(filePath).Length
+                FileModifiedDate = GetSafeFileTime(filePath),
+                FileSize = GetSafeFileSize(filePath)
             });
         }
 
@@ -255,8 +269,8 @@ public class FileScanner : IScanner
                 Confidence = 0.95,
                 Recommendation = "Этот файл может содержать ключи, сертификаты или секреты. Убедитесь, что он защищён и не хранится в открытых папках.",
                 FileType = extension,
-                FileModifiedDate = File.GetLastWriteTime(filePath),
-                FileSize = new FileInfo(filePath).Length
+                FileModifiedDate = GetSafeFileTime(filePath),
+                FileSize = GetSafeFileSize(filePath)
             });
         }
 
@@ -271,8 +285,8 @@ public class FileScanner : IScanner
                 Confidence = 0.5,
                 Recommendation = "Архивы могут содержать конфиденциальные данные. Проверьте содержимое при необходимости.",
                 FileType = extension,
-                FileModifiedDate = File.GetLastWriteTime(filePath),
-                FileSize = new FileInfo(filePath).Length
+                FileModifiedDate = GetSafeFileTime(filePath),
+                FileSize = GetSafeFileSize(filePath)
             });
         }
 
@@ -290,8 +304,8 @@ public class FileScanner : IScanner
                     Confidence = 0.65,
                     Recommendation = "Резервные копии могут содержать устаревшие конфиденциальные данные. Рассмотрите безопасное удаление.",
                     FileType = extension,
-                    FileModifiedDate = File.GetLastWriteTime(filePath),
-                    FileSize = new FileInfo(filePath).Length
+                    FileModifiedDate = GetSafeFileTime(filePath),
+                    FileSize = GetSafeFileSize(filePath)
                 });
             }
         }
@@ -303,12 +317,12 @@ public class FileScanner : IScanner
             results.AddRange(contentResults);
         }
 
-        // 4. Метаданные изображений (EXIF)
-        if (PatternLibrary.ImageExtensions.Contains(extension))
-        {
-            var exifResults = await ScanImageMetadataAsync(filePath, cancellationToken);
-            results.AddRange(exifResults);
-        }
+        // 4. Метаданные изображений (EXIF) — отключено: GDI+ Bitmap вызывает вылеты
+        // if (PatternLibrary.ImageExtensions.Contains(extension))
+        // {
+        //     var exifResults = await ScanImageMetadataAsync(filePath, cancellationToken);
+        //     results.AddRange(exifResults);
+        // }
 
         return results;
     }
@@ -351,8 +365,8 @@ public class FileScanner : IScanner
                     Recommendation = "Файл содержит персональные данные или чувствительные ключевые слова. Проверьте необходимость хранения этих данных.",
                     MaskedExample = DataMasker.MaskContent(content, 200),
                     FileType = Path.GetExtension(filePath),
-                    FileModifiedDate = File.GetLastWriteTime(filePath),
-                    FileSize = new FileInfo(filePath).Length
+                    FileModifiedDate = GetSafeFileTime(filePath),
+                    FileSize = GetSafeFileSize(filePath)
                 });
             }
         }
@@ -534,5 +548,29 @@ public class FileScanner : IScanner
             // Пропускаем
         }
         return count;
+    }
+
+    private static DateTime? GetSafeFileTime(string filePath)
+    {
+        try
+        {
+            return File.GetLastWriteTime(filePath);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static long? GetSafeFileSize(string filePath)
+    {
+        try
+        {
+            return new FileInfo(filePath).Length;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
