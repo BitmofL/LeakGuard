@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataShield Scanner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                        <path fill="#00ff88" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>DataShield Scanner</h1>
+                    <p class="version">v1.0.0</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="btn-about" title="О программе">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Scan Options -->
+            <section class="scan-options">
+                <h2 class="section-title">
+                    <span class="title-icon">⚡</span>
+                    Параметры сканирования
+                </h2>
+                <div class="options-grid">
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="personal_info">
+                        <div class="option-content">
+                            <span class="option-icon">👤</span>
+                            <span class="option-label">Личные данные</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="emails">
+                        <div class="option-content">
+                            <span class="option-icon">📧</span>
+                            <span class="option-label">Email адреса</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="phone_numbers">
+                        <div class="option-content">
+                            <span class="option-icon">📱</span>
+                            <span class="option-label">Номера телефонов</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="social_accounts">
+                        <div class="option-content">
+                            <span class="option-icon">🌐</span>
+                            <span class="option-label">Социальные сети</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="documents">
+                        <div class="option-content">
+                            <span class="option-icon">📄</span>
+                            <span class="option-label">Документы</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="passwords_tokens">
+                        <div class="option-content">
+                            <span class="option-icon">🔑</span>
+                            <span class="option-label">Пароли и токены</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="geolocation_history">
+                        <div class="option-content">
+                            <span class="option-icon">📍</span>
+                            <span class="option-label">Геолокация</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="digital_fingerprints">
+                        <div class="option-content">
+                            <span class="option-icon">🖥️</span>
+                            <span class="option-label">Цифровые отпечатки</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="nicknames">
+                        <div class="option-content">
+                            <span class="option-icon">🎭</span>
+                            <span class="option-label">Никнеймы</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="birth_year">
+                        <div class="option-content">
+                            <span class="option-icon">📅</span>
+                            <span class="option-label">Год рождения</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="games_installed">
+                        <div class="option-content">
+                            <span class="option-icon">🎮</span>
+                            <span class="option-label">Установленные игры</span>
+                        </div>
+                    </label>
+                    <label class="option-card">
+                        <input type="checkbox" checked data-scan="applications_installed">
+                        <div class="option-content">
+                            <span class="option-icon">📦</span>
+                            <span class="option-label">Приложения</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Scan Button -->
+            <section class="scan-action">
+                <button class="btn-scan" id="btn-scan">
+                    <span class="btn-text">Начать сканирование</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progress-section" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-category" id="progress-category">Инициализация...</span>
+                        <span class="progress-percent" id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results-section" style="display: none;">
+                <h2 class="section-title">
+                    <span class="title-icon">📊</span>
+                    Результаты сканирования
+                </h2>
+                <div class="results-summary" id="results-summary"></div>
+                <div class="results-list" id="results-list"></div>
+                <div class="results-actions">
+                    <button class="btn-action" id="btn-export">
+                        <span>📤</span> Экспортировать отчёт
+                    </button>
+                    <button class="btn-action" id="btn-share">
+                        <span>🔗</span> Поделиться
+                    </button>
+                    <button class="btn-action btn-danger" id="btn-clear">
+                        <span>🗑️</span> Очистить результаты
+                    </button>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section class="settings-section">
+                <h2 class="section-title">
+                    <span class="title-icon">⚙️</span>
+                    Настройки
+                </h2>
+                <div class="settings-grid">
+                    <label class="setting-item">
+                        <span class="setting-label">Автозапуск при старте Windows</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-autostart">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <label class="setting-item">
+                        <span class="setting-label">Шифрование отчётов</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked id="toggle-encryption">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <label class="setting-item">
+                        <span class="setting-label">Автоматическое удаление отчётов</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked id="toggle-auto-delete">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <label class="setting-item">
+                        <span class="setting-label">Проверка через HIBP API</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked id="toggle-hibp">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>DataShield Scanner © 2026 | Разработчик: <a href="https://github.com/BitmofL" target="_blank">BitmofL</a></p>
+        </footer>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="about-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>О программе</h2>
+                <button class="modal-close" id="btn-close-about">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-info">
+                    <div class="about-logo">
+                        <svg viewBox="0 0 24 24" width="64" height="64">
+                            <path fill="#00ff88" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                        </svg>
+                    </div>
+                    <h3>DataShield Scanner v1.0.0</h3>
+                    <p class="about-description">
+                        Утилита для обнаружения утечек персональных данных и оценки безопасности вашей информации.
+                        Помогает выявить, где ваши личные данные могут быть скомпрометированы.
+                    </p>
+                    <div class="about-details">
+                        <p><strong>Разработчик:</strong> BitmofL</p>
+                        <p><strong>GitHub:</strong> <a href="https://github.com/BitmofL" target="_blank">github.com/BitmofL</a></p>
+                        <p><strong>Контакты:</strong> Для вопросов используйте Discussions на странице продукта</p>
+                        <p><strong>Лицензия:</strong> MIT License</p>
+                    </div>
+                    <div class="about-guide">
+                        <h4>📖 Как пользоваться:</h4>
+                        <ol>
+                            <li>Выберите параметры сканирования</li>
+                            <li>Нажмите "Начать сканирование"</li>
+                            <li>Дождитесь завершения проверки</li>
+                            <li>Изучите результаты и рекомендации</li>
+                            <li>При необходимости экспортируйте отчёт</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="btn-close-about-footer">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Экспорт отчёта</h2>
+                <button class="modal-close" id="btn-close-export">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="encrypted" checked>
+                        <span class="export-label">
+                            <strong>🔒 Зашифрованный отчёт</strong>
+                            <small>Требует пароль для открытия</small>
+                        </span>
+                    </label>
+                    <label class="export-option">
+                        <input type="radio" name="export-format" value="plain">
+                        <span class="export-label">
+                            <strong>📄 Обычный файл</strong>
+                            <small>Открывается без пароля</small>
+                        </span>
+                    </label>
+                </div>
+                <div class="password-section" id="password-section">
+                    <label for="export-password">Пароль для шифрования:</label>
+                    <input type="password" id="export-password" placeholder="Введите надёжный пароль">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="btn-cancel-export">Отмена</button>
+                <button class="btn-primary" id="btn-confirm-export">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

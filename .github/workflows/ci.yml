@@ -1,0 +1,108 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  SOLUTION_FILE: Win-scanner.sln
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_FILE }}
+
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test src/LeakGuard.Tests/LeakGuard.Tests.csproj --configuration Release --no-build --verbosity normal
+
+    - name: Publish portable
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        dotnet publish src/LeakGuard.App/LeakGuard.App.csproj `
+          -c Release `
+          -r win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:PublishReadyToRun=false `
+          -o ./publish/leakguard-portable
+
+    - name: Generate SBOM
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        dotnet tool install -g dotnet-sbom
+        dotnet-sbom init -pr src/LeakGuard.App/LeakGuard.App.csproj -o ./publish/sbom.json
+
+    - name: Calculate hashes
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        Get-ChildItem ./publish/leakguard-portable/*.exe | ForEach-Object {
+          $hash = Get-FileHash $_ -Algorithm SHA256
+          "$($hash.Hash)  $($($_.Name))" | Out-File -FilePath ./publish/hashes.txt -Append
+        }
+
+    - name: Upload artifact
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/upload-artifact@v4
+      with:
+        name: leakguard-portable-win-x64
+        path: ./publish/leakguard-portable/
+        retention-days: 30
+
+    - name: Upload SBOM
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/upload-artifact@v4
+      with:
+        name: leakguard-sbom
+        path: ./publish/sbom.json
+        retention-days: 365
+
+    - name: Upload hashes
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/upload-artifact@v4
+      with:
+        name: leakguard-hashes
+        path: ./publish/hashes.txt
+        retention-days: 365
+
+  release:
+    name: Create Release
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'release:')
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: leakguard-portable-win-x64
+        path: ./release/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./release/*.exe
+        tag_name: v${{ github.run_number }}
+        generate_release_notes: true
+        draft: false
+        prerelease: false

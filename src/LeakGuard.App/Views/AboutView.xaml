@@ -1,0 +1,107 @@
+<UserControl x:Class="LeakGuard.App.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundPrimary}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+        <StackPanel>
+
+            <TextBlock Text="О программе"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimary}"
+                       Margin="0,20,0,8"/>
+
+            <!-- Логотип и название -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20" Padding="30">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="🛡" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <TextBlock Text="LeakGuard" FontSize="28" FontWeight="Bold"
+                               Foreground="{StaticResource AccentGreen}"
+                               HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                    <TextBlock Text="Сканер приватности" FontSize="16"
+                               Foreground="{StaticResource TextSecondary}"
+                               HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                    <TextBlock Text="Версия 0.1.0" FontSize="13"
+                               Foreground="{StaticResource TextTertiary}"
+                               HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                    <TextBlock Text="Разработчик: BitmofL" FontSize="13"
+                               Foreground="{StaticResource TextSecondary}"
+                               HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                    <Button Content="GitHub: github.com/BitmofL"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Padding="16,8"
+                            Click="BtnOpenGitHub_Click"/>
+                    <TextBlock Text="Привет, я разработчик софта. По вопросам пишите в Discussions на странице продукта."
+                               FontSize="12" Foreground="{StaticResource TextTertiary}"
+                               TextWrapping="Wrap" HorizontalAlignment="Center"
+                               Margin="0,12,0,0" MaxWidth="400"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Описание -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Что делает LeakGuard"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{StaticResource TextSecondary}"
+                               LineHeight="22">
+                        <Run>LeakGuard — это локальный инструмент для самостоятельного аудита приватности.</Run>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run>Он помогает найти файлы с персональными данными, чувствительные документы, </Run>
+                        <Run>потенциально опасные настройки и предложить безопасные действия.</Run>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run>Это НЕ троян, НЕ средство обхода антивирусов и НЕ инструмент для сбора чужих данных.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Принципы -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Принципы работы"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource AccentGreen}"
+                               Margin="0,0,0,12"/>
+                    <StackPanel>
+                        <TextBlock Text="🔒 Privacy by default — локальная работа, без отправки данных" FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,6"/>
+                        <TextBlock Text="🤝 Явное согласие — каждое действие требует подтверждения" FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,6"/>
+                        <TextBlock Text="📦 Минимизация данных — не собираем и не храним лишнее" FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,6"/>
+                        <TextBlock Text="👁 Прозрачность — приложение открыто, легко удаляемо" FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,6"/>
+                        <TextBlock Text="🚫 Никакого скрытого поведения — обход UAC, маскировка, перехват" FontSize="13" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,6"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Ссылки -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Ссылки"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <StackPanel>
+                        <Button Content="📄 README" Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="12,6" Margin="0,0,0,6" Click="BtnOpenReadme_Click"/>
+                        <Button Content="📋 Лицензия" Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="12,6" Margin="0,0,0,6" Click="BtnOpenLicense_Click"/>
+                        <Button Content="🔒 Политика конфиденциальности" Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="12,6" Margin="0,0,0,6" Click="BtnOpenPrivacy_Click"/>
+                        <Button Content="📝 Пользовательское соглашение" Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="12,6" Click="BtnOpenAgreement_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Назад -->
+            <Button Content="← Назад"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Padding="16,8"
+                    Click="BtnBack_Click"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

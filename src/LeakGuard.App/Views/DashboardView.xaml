@@ -1,0 +1,151 @@
+<UserControl x:Class="LeakGuard.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundPrimary}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+        <StackPanel>
+
+            <!-- Приветствие -->
+            <TextBlock Text="Добро пожаловать в LeakGuard"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimary}"
+                       Margin="0,20,0,8"/>
+
+            <TextBlock Text="Локальный сканер приватности и базовой безопасности вашего ПК"
+                       FontSize="15" Foreground="{StaticResource TextSecondary}"
+                       Margin="0,0,0,30" TextWrapping="Wrap"/>
+
+            <!-- Карточки быстрого доступа -->
+            <Grid Margin="0,0,0,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Быстрое сканирование -->
+                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource CardStyle}"
+                        Margin="0,0,10,10" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="⚡ Быстрое сканирование"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentGreen}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Проверка основных папок: Рабочий стол, Документы, Загрузки, автозапуск и базовые настройки безопасности."
+                                   FontSize="13" Foreground="{StaticResource TextSecondary}"
+                                   TextWrapping="Wrap" Margin="0,0,0,16"/>
+                        <Button Content="Начать сканирование"
+                                Style="{StaticResource ScanButtonStyle}"
+                                Padding="20,10"
+                                Click="BtnQuickScan_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Полное сканирование -->
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CardStyle}"
+                        Margin="10,0,0,10" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="🔍 Полное сканирование"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentAmber}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Выбор дисков и каталогов для глубокой проверки. Включает все файлы и папки на выбранных разделах."
+                                   FontSize="13" Foreground="{StaticResource TextSecondary}"
+                                   TextWrapping="Wrap" Margin="0,0,0,16"/>
+                        <Button Content="Начать сканирование"
+                                Style="{StaticResource WarningButtonStyle}"
+                                Padding="20,10"
+                                Click="BtnFullScan_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Настроить области -->
+                <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource CardStyle}"
+                        Margin="0,0,10,10" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="⚙ Настроить области"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentBlue}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Выберите конкретные папки, расширения файлов, исключения и лимиты для настраиваемого сканирования."
+                                   FontSize="13" Foreground="{StaticResource TextSecondary}"
+                                   TextWrapping="Wrap" Margin="0,0,0,16"/>
+                        <Button Content="Настроить"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="20,10"
+                                Click="BtnCustomScan_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Последний отчёт -->
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource CardStyle}"
+                        Margin="10,0,0,10" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="📄 Открыть отчёт"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentPurple}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Просмотр и экспорт последних отчётов сканирования. Поддержка HTML, JSON и шифрования."
+                                   FontSize="13" Foreground="{StaticResource TextSecondary}"
+                                   TextWrapping="Wrap" Margin="0,0,0,16"/>
+                        <Button Content="Открыть отчёты"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="20,10"
+                                Click="BtnOpenReports_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Статистика последнего сканирования -->
+            <Border Style="{StaticResource CardStyle}" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Последнее сканирование"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Дата" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtLastScanDate" Text="—" Foreground="{StaticResource TextPrimary}" FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Результатов" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtLastScanResults" Text="—" Foreground="{StaticResource TextPrimary}" FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Высокий риск" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtLastScanHigh" Text="—" Foreground="{StaticResource RiskHigh}" FontSize="14"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Блок приватности -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,20,0,0" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="🔒 Принципы приватности"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource AccentGreen}"
+                               Margin="0,0,0,12"/>
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="✓ Всё работает локально — данные не покидают ваш ПК" FontSize="13" Foreground="{StaticResource TextSecondary}"/>
+                        <TextBlock Text="✓ Никакой отправки файлов, отчётов или персональных данных в интернет" FontSize="13" Foreground="{StaticResource TextSecondary}"/>
+                        <TextBlock Text="✓ Каждая операция за пределами сканирования требует вашего согласия" FontSize="13" Foreground="{StaticResource TextSecondary}"/>
+                        <TextBlock Text="✓ Персональные данные в отчётах маскируются по умолчанию" FontSize="13" Foreground="{StaticResource TextSecondary}"/>
+                        <TextBlock Text="✓ Приложение прозрачно, легко удаляемо и не маскируется" FontSize="13" Foreground="{StaticResource TextSecondary}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

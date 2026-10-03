@@ -1,0 +1,120 @@
+<UserControl x:Class="LeakGuard.App.Views.ScanView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundPrimary}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+        <StackPanel>
+
+            <!-- Заголовок -->
+            <TextBlock x:Name="TxtScanTitle" Text="Сканирование"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimary}"
+                       Margin="0,20,0,8"/>
+
+            <!-- Прогресс -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock x:Name="TxtStatus" Text="Инициализация..."
+                               FontSize="15" Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,8"/>
+                    <TextBlock x:Name="TxtProgressText" Text="0 / 0 файлов"
+                               FontSize="13" Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,0,12"/>
+                    <ProgressBar x:Name="ScanProgressBar" Value="0" Height="8"/>
+                    <TextBlock x:Name="TxtCurrentFolder" Text="— "
+                               FontSize="12" Foreground="{StaticResource TextTertiary}"
+                               Margin="0,8,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Панель управления -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <Button x:Name="BtnStop" Content="⏹ Остановить"
+                        Style="{StaticResource DangerButtonStyle}"
+                        Padding="16,8"
+                        Click="BtnStop_Click"
+                        Margin="0,0,10,0"/>
+                <Button x:Name="BtnBack" Content="← Назад"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Padding="16,8"
+                        Click="BtnBack_Click"/>
+            </StackPanel>
+
+            <!-- Найдено на этом шаге -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Обнаружено"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Всего" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtTotalFound" Text="0" Foreground="{StaticResource TextPrimary}" FontSize="20" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Низкий риск" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtLowFound" Text="0" Foreground="{StaticResource RiskLow}" FontSize="20" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Средний риск" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtMediumFound" Text="0" Foreground="{StaticResource RiskMedium}" FontSize="20" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="Высокий риск" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                            <TextBlock x:Name="TxtHighFound" Text="0" Foreground="{StaticResource RiskHigh}" FontSize="20" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Последние найденные -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Последние обнаружения"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <ItemsControl x:Name="TxtRecentFindings">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource ResultListItemStyle}">
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding CategoryDisplay}"
+                                                       Foreground="{StaticResource TextPrimary}" FontSize="13" FontWeight="SemiBold"/>
+                                            <Border Grid.Column="1" Style="{StaticResource RiskIndicatorStyle}"
+                                                    Background="{Binding RiskColor, Converter={StaticResource RiskToBrushConverter}}">
+                                                <TextBlock Text="{Binding RiskLevelDisplay}" FontSize="11"
+                                                           FontWeight="Bold" Padding="6,2"
+                                                           Foreground="#1a1b26"/>
+                                            </Border>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Reason}" FontSize="12"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding FilePath}" FontSize="11"
+                                                   Foreground="{StaticResource TextTertiary}"
+                                                   Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

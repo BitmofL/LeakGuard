@@ -1,0 +1,89 @@
+# Windows files
+*.exe
+*.dll
+*.pdb
+*.ipdb
+*.ilk
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.obj
+*.pch
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.json
+lib/
+packages/
+*.tt
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+*.vssettings
+*.resharper
+*.sln.ide
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+
+# Test results
+TestResults/
+[Bb]uild/
+[Ll]ocal[Oo]pp[Ll]ane/
+
+# Application data
+LeakGuard/
+*.log
+*.delete_marker
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+*.swp
+*~
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Secrets
+*.key
+*.p12
+*.pfx
+*.pem
+*.env
+*.credentials
+*.secret
+*.keystore
+*.jks
+*.keystore
+
+# Certificates
+*.p12
+*.pfx
+*.crt
+*.cer

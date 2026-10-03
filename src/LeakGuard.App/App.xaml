@@ -1,0 +1,16 @@
+<Application x:Class="LeakGuard.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:LeakGuard.App.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Theme.xaml"/>
+                <ResourceDictionary Source="Styles/Controls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <local:RiskLevelToBrushConverter x:Key="RiskToBrushConverter"/>
+            <local:RiskLevelToColorConverter x:Key="RiskToColorConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,175 @@
+<UserControl x:Class="LeakGuard.App.Views.GuideView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundPrimary}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+        <StackPanel>
+
+            <TextBlock Text="Руководство пользователя"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimary}"
+                       Margin="0,20,0,8"/>
+
+            <!-- Быстрый старт -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="🚀 Быстрый старт"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource AccentGreen}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{StaticResource TextSecondary}" LineHeight="22">
+                        <Run>1. Откройте LeakGuard</Run>
+                        <LineBreak/>
+                        <Run>2. Нажмите «Быстрое сканирование» на главном экране</Run>
+                        <LineBreak/>
+                        <Run>3. Дождитесь завершения — прогресс отображается в реальном времени</Run>
+                        <LineBreak/>
+                        <Run>4. Просмотрите результаты с фильтрами по риску и категории</Run>
+                        <LineBreak/>
+                        <Run>5. При необходимости экспортируйте отчёт в HTML или JSON</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Режимы сканирования -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="🔍 Режимы сканирования"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Быстрое сканирование"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource AccentGreen}"
+                               Margin="0,8,0,4"/>
+                    <TextBlock Text="Проверяет: Рабочий стол, Документы, Загрузки, Изображения, облачные папки (если есть), автозапуск. Занимает 1–5 минут."
+                               FontSize="12" Foreground="{StaticResource TextSecondary}"
+                               TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Полное сканирование"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource AccentAmber}"
+                               Margin="0,8,0,4"/>
+                    <TextBlock Text="Проверяет все выбранные диски и каталоги. Перед началом покажет предупреждение о времени. Может занять от 10 минут до нескольких часов."
+                               FontSize="12" Foreground="{StaticResource TextSecondary}"
+                               TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Настраиваемое сканирование"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{StaticResource AccentBlue}"
+                               Margin="0,8,0,4"/>
+                    <TextBlock Text="Выберите конкретные папки, расширения файлов, исключения и лимиты."
+                               FontSize="12" Foreground="{StaticResource TextSecondary}"
+                               TextWrapping="Wrap" Margin="0,0,0,12"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Уровни риска -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="⚠️ Уровни риска"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="🔵 Информация" Foreground="{StaticResource RiskInfo}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                        <TextBlock Text="Не является риском. Информационные сообщения о метаданных и настройках."
+                                   FontSize="12" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="🟢 Низкий риск" Foreground="{StaticResource RiskLow}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                        <TextBlock Text="Данные могут быть доступны. Например: email в текстовом файле, архив без пароля."
+                                   FontSize="12" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="🟡 Средний риск" Foreground="{StaticResource RiskMedium}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                        <TextBlock Text="Требует проверки. Например: резервная копия с чувствительным именем, GPS в изображении."
+                                   FontSize="12" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="🔴 Высокий риск" Foreground="{StaticResource RiskHigh}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                        <TextBlock Text="Потенциальная утечка. Например: .env-файл с ключами, файл с расширением .pem в открытой папке."
+                                   FontSize="12" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Экспорт -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="📄 Экспорт отчёта"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{StaticResource TextSecondary}" LineHeight="22">
+                        <Run>• HTML — красивый отчёт с цветовой кодировкой рисков</Run>
+                        <LineBreak/>
+                        <Run>• JSON — структурированные данные для анализа</Run>
+                        <LineBreak/>
+                        <Run>• По умолчанию персональные данные маскируются</Run>
+                        <LineBreak/>
+                        <Run>• Можно включить шифрование DPAPI</Run>
+                        <LineBreak/>
+                        <Run>• Отчёт сохраняется только локально</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Автозапуск -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="⚙ Автозапуск"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{StaticResource TextSecondary}" LineHeight="22">
+                        <Run>• По умолчанию выключен</Run>
+                        <LineBreak/>
+                        <Run>• Включается через Планировщик задач Windows</Run>
+                        <LineBreak/>
+                        <Run>• Запускает лёгкий модуль уведомлений без сканирования</Run>
+                        <LineBreak/>
+                        <Run>• Можно отключить в настройках или удалить задачу вручную</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Удаление -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="🗑 Удаление приложения"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="{StaticResource TextSecondary}" LineHeight="22">
+                        <Run>1. Откройте Настройки → «Удалить все отчёты и кэш»</Run>
+                        <LineBreak/>
+                        <Run>2. Удалите задачу автозапуска (если включена)</Run>
+                        <LineBreak/>
+                        <Run>3. Удалите папку приложения: %APPDATA%\LeakGuard</Run>
+                        <LineBreak/>
+                        <Run>4. Удалите исполняемый файл LeakGuard.exe</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Назад -->
+            <Button Content="← Назад"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Padding="16,8"
+                    Margin="0,20,0,0"
+                    Click="BtnBack_Click"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

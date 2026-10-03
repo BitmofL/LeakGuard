@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "DataShield Scanner",
+    "version": "1.0.0",
+    "developer": "BitmofL",
+    "github": "https://github.com/BitmofL",
+    "description": "Utility for detecting data leaks and personal information exposure"
+  },
+  "scanner": {
+    "scan_types": {
+      "personal_info": true,
+      "emails": true,
+      "phone_numbers": true,
+      "social_accounts": true,
+      "documents": true,
+      "passwords_tokens": true,
+      "geolocation_history": true,
+      "digital_fingerprints": true,
+      "nicknames": true,
+      "birth_year": true,
+      "games_installed": true,
+      "applications_installed": true
+    }
+  },
+  "security": {
+    "report_encryption": true,
+    "auto_delete_report": true,
+    "encryption_algorithm": "AES-256-GCM",
+    "secure_temp_folder": "temp/secure_store",
+    "stealth_mode": false
+  },
+  "online_checks": {
+    "hibp_enabled": true,
+    "hibp_api_key": "",
+    "shodan_enabled": false,
+    "shodan_api_key": ""
+  },
+  "autostart": {
+    "enabled": false,
+    "registry_key": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\DataShieldScanner"
+  },
+  "ui": {
+    "theme": "dark",
+    "primary_color": "#00ff88",
+    "secondary_color": "#6c5ce7",
+    "background_color": "#0d0d1a",
+    "text_color": "#e0e0e0",
+    "accent_color": "#00d2ff"
+  }
+}

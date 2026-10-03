@@ -1,0 +1,204 @@
+<UserControl x:Class="LeakGuard.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundPrimary}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+        <StackPanel>
+
+            <TextBlock Text="Настройки"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimary}"
+                       Margin="0,20,0,8"/>
+
+            <!-- Вкладка: Общее -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Общие настройки"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,16"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Принципы приватности"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="Приложение работает локально. Данные не отправляются в интернет без вашего явного согласия."
+                                       FontSize="12" Foreground="{StaticResource TextSecondary}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                            <CheckBox x:Name="ChkInternetAccess" Content="Разрешить интернет-проверки (утечки)"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Margin="0,0,0,8"/>
+                            <TextBlock Text="⚠ По умолчанию отключено. Требует явного согласия при каждом запросе."
+                                       FontSize="11" Foreground="{StaticResource AccentAmber}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Вкладка: Автозапуск -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Автозапуск"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,16"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Запуск после входа"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="Лёгкий модуль уведомлений будет запускаться при входе в Windows через планировщик задач."
+                                       FontSize="12" Foreground="{StaticResource TextSecondary}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                            <CheckBox x:Name="ChkAutoStart" Content="Запускать после входа в Windows"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Checked="ChkAutoStart_CheckedChanged"
+                                      Unchecked="ChkAutoStart_CheckedChanged"
+                                      Margin="0,0,0,8"/>
+                            <Button Content="Удалить задачу автозапуска"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Padding="12,6" FontSize="12"
+                                    Click="BtnRemoveStartup_Click"
+                                    Margin="0,0,0,8"/>
+                            <TextBlock x:Name="TxtStartupStatus"
+                                       FontSize="11" Foreground="{StaticResource TextTertiary}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Вкладка: Отчёты -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Настройки отчётов"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,16"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Параметры экспорта"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="Настройки маскирования и шифрования для экспортируемых отчётов."
+                                       FontSize="12" Foreground="{StaticResource TextSecondary}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                            <CheckBox x:Name="ChkIncludePaths" Content="Включать пути файлов в отчёт"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Margin="0,0,0,8"/>
+                            <CheckBox x:Name="ChkIncludeMasked" Content="Включать замаскированные примеры"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Margin="0,0,0,8"/>
+                            <CheckBox x:Name="ChkIncludeTech" Content="Включать техническую информацию"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Margin="0,0,0,8"/>
+                            <CheckBox x:Name="ChkEncrypt" Content="Шифровать отчёты (DPAPI)"
+                                      Foreground="{StaticResource TextPrimary}" FontSize="13"
+                                      Margin="0,0,0,8"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Вкладка: Удаление данных -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Удаление данных"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,16"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Управление отчётами"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="Удаление всех отчётов и настройка автоудаления."
+                                       FontSize="12" Foreground="{StaticResource TextSecondary}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Автоудаление отчётов"
+                                               FontSize="13" Foreground="{StaticResource TextPrimary}"
+                                               Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="CmbAutoDelete" SelectedIndex="0" Width="200">
+                                        <ComboBoxItem Content="Никогда"/>
+                                        <ComboBoxItem Content="1 день"/>
+                                        <ComboBoxItem Content="7 дней"/>
+                                        <ComboBoxItem Content="30 дней"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <Button Grid.Column="1" Content="Удалить всё"
+                                        Style="{StaticResource DangerButtonStyle}"
+                                        Padding="12,6" FontSize="12"
+                                        Click="BtnDeleteAll_Click"
+                                        Margin="10,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Кнопка сохранения -->
+            <Button Content="💾 Сохранить настройки"
+                    Style="{StaticResource ScanButtonStyle}"
+                    Padding="20,10" FontSize="15"
+                    Click="BtnSaveSettings_Click"
+                    Margin="0,0,0,20"/>
+
+            <!-- Кнопка назад -->
+            <Button Content="← Назад"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Padding="16,8"
+                    Click="BtnBack_Click"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
