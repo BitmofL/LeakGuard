@@ -168,12 +168,16 @@ public class FileScanner : IScanner
         string directory,
         ConcurrentBag<ScanResult> results,
         CancellationToken cancellationToken,
-        long totalFiles)
+        long totalFiles,
+        int depth = 0)
     {
         var count = 0L;
 
         try
         {
+            // Ограничиваем глубину рекурсии 15 уровнями
+            if (depth > 15)
+                return count;
             // Сканируем файлы в текущей директории
             foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
             {
@@ -196,7 +200,7 @@ public class FileScanner : IScanner
 
                 if (cancellationToken.IsCancellationRequested) break;
 
-                count += await ScanDirectoryAsync(subDir, results, cancellationToken, totalFiles);
+                count += await ScanDirectoryAsync(subDir, results, cancellationToken, totalFiles, depth + 1);
             }
         }
         catch (UnauthorizedAccessException)
@@ -374,6 +378,11 @@ public class FileScanner : IScanner
 
         try
         {
+            // Пропускаем файлы больше 10 МБ
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Length > 10 * 1024 * 1024)
+                return results;
+
             using var bitmap = new System.Drawing.Bitmap(filePath);
             var propertyIds = bitmap.PropertyIdList ?? Array.Empty<int>();
 
@@ -481,9 +490,9 @@ public class FileScanner : IScanner
                 }
             }
         }
-        catch (Exception ex) when (ex is FileNotFoundException || ex is ArgumentException || ex is NotSupportedException || ex is OutOfMemoryException || ex is IOException)
+        catch (Exception ex) when (ex is FileNotFoundException || ex is ArgumentException || ex is NotSupportedException || ex is OutOfMemoryException || ex is IOException || ex is System.Runtime.InteropServices.ExternalException || ex is ObjectDisposedException)
         {
-            // Не поддерживаемый формат, повреждённый файл или нет прав
+            // Не поддерживаемый формат, повреждённый файл, нет прав или GDI+ ошибка
         }
         catch
         {
@@ -517,7 +526,7 @@ public class FileScanner : IScanner
         var count = 0L;
         try
         {
-            foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
                 count++;
         }
         catch
