@@ -22,6 +22,7 @@ public partial class ScanView : UserControl
     private readonly FileScanner _scanner;
     private readonly CancellationTokenSource _cts = new();
     private bool _isScanning = false;
+    private bool _isUnloaded = false;
     private ObservableCollection<ScanResult> _recentFindings = new();
 
     public ScanView(ScanMode mode, AppSettings settings, LoggingService logging, ReportStorage reportStorage)
@@ -161,8 +162,10 @@ public partial class ScanView : UserControl
 
     private void OnProgressChanged(ScanProgress progress)
     {
+        if (_isUnloaded) return;
         Application.Current.Dispatcher.BeginInvoke(() =>
         {
+            if (_isUnloaded) return;
             TxtStatus.Text = progress.StatusMessage;
             TxtProgressText.Text = $"{progress.FilesScanned:N0} / {progress.TotalFiles:N0} файлов";
             ScanProgressBar.Value = progress.ProgressPercent;
@@ -172,8 +175,10 @@ public partial class ScanView : UserControl
 
     private void OnResultFound(ScanResult result)
     {
+        if (_isUnloaded) return;
         Application.Current.Dispatcher.BeginInvoke(() =>
         {
+            if (_isUnloaded) return;
             _recentFindings.Insert(0, result);
             if (_recentFindings.Count > 50)
                 _recentFindings.RemoveAt(50);
@@ -187,6 +192,8 @@ public partial class ScanView : UserControl
         _isScanning = false;
         BtnStop.IsEnabled = false;
 
+        if (_isUnloaded) return;
+
         TxtStatus.Text = $"Сканирование завершено! Найдено {results.Count} результатов.";
         _settings.LastScanDate = DateTime.Now;
         _reportStorage.SaveSettingsAsync().ConfigureAwait(false);
@@ -195,6 +202,7 @@ public partial class ScanView : UserControl
         // Переход к результатам
         System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
+            if (_isUnloaded) return;
             var view = new Views.ResultsView(_settings, _logging, _reportStorage);
             var mainWindow = Window.GetWindow(this);
             if (mainWindow is System.Windows.Window win)
@@ -299,6 +307,7 @@ public partial class ScanView : UserControl
 
     private void ScanView_Unloaded(object sender, RoutedEventArgs e)
     {
+        _isUnloaded = true;
         _cts.Cancel();
         _cts.Dispose();
     }

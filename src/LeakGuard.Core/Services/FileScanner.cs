@@ -67,34 +67,61 @@ public class FileScanner : IScanner
         var pathList = paths.ToList();
         var totalFiles = CountFiles(pathList, cancellationToken);
 
-        foreach (var path in pathList)
+        try
         {
-            if (cancellationToken.IsCancellationRequested) break;
-
-            if (Directory.Exists(path))
+            foreach (var path in pathList)
             {
-                var folderResults = await ScanDirectoryAsync(
-                    path, results, cancellationToken, totalFiles);
-                filesScanned += folderResults;
+                if (cancellationToken.IsCancellationRequested) break;
+
+                if (Directory.Exists(path))
+                {
+                    try
+                    {
+                        var folderResults = await ScanDirectoryAsync(
+                            path, results, cancellationToken, totalFiles);
+                        filesScanned += folderResults;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Пропускаем недоступные папки
+                        Console.WriteLine($"Ошибка сканирования папки {path}: {ex.Message}");
+                    }
+                }
+                else if (File.Exists(path))
+                {
+                    try
+                    {
+                        var singleResult = await ScanFileAsync(path, cancellationToken);
+                        foreach (var r in singleResult)
+                            results.Add(r);
+                        filesScanned++;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Пропускаем недоступные файлы
+                        Console.WriteLine($"Ошибка сканирования файла {path}: {ex.Message}");
+                    }
+                }
+
+                var progress = new ScanProgress
+                {
+                    CurrentFolder = path,
+                    FilesScanned = filesScanned,
+                    TotalFiles = totalFiles,
+                    StatusMessage = $"Проверка: {path}",
+                    ProgressPercent = totalFiles > 0 ? (double)filesScanned / totalFiles * 100 : 0
+                };
+
+                ProgressChanged?.Invoke(progress);
             }
-            else if (File.Exists(path))
-            {
-                var singleResult = await ScanFileAsync(path, cancellationToken);
-                foreach (var r in singleResult)
-                    results.Add(r);
-                filesScanned++;
-            }
-
-            var progress = new ScanProgress
-            {
-                CurrentFolder = path,
-                FilesScanned = filesScanned,
-                TotalFiles = totalFiles,
-                StatusMessage = $"Проверка: {path}",
-                ProgressPercent = totalFiles > 0 ? (double)filesScanned / totalFiles * 100 : 0
-            };
-
-            ProgressChanged?.Invoke(progress);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ожидается при отмене
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка сканирования: {ex.Message}");
         }
 
         sw.Stop();
@@ -455,9 +482,9 @@ public class FileScanner : IScanner
                 }
             }
         }
-        catch (Exception ex) when (ex is FileNotFoundException || ex is ArgumentException || ex is NotSupportedException)
+        catch (Exception ex) when (ex is FileNotFoundException || ex is ArgumentException || ex is NotSupportedException || ex is OutOfMemoryException || ex is IOException)
         {
-            // Не поддерживаемый формат или повреждённый файл
+            // Не поддерживаемый формат, повреждённый файл или нет прав
         }
 
         return results;
