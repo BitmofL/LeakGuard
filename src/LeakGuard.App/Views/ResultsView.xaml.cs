@@ -150,25 +150,57 @@ public partial class ResultsView : UserControl
 
     private void BtnOpenLocation_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is string path && !string.IsNullOrEmpty(path))
+        if (ResultsList.SelectedItem is ScanResult result && !string.IsNullOrEmpty(result.FilePath))
         {
-            var dir = Path.GetDirectoryName(path);
+            var dir = Path.GetDirectoryName(result.FilePath);
             if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
             {
-                Process.Start("explorer.exe", $"/select,\"{path}\"");
+                Process.Start("explorer.exe", $"/select,\"{result.FilePath}\"");
+            }
+            else
+            {
+                MessageBox.Show("Файл или папка недоступны.", "LeakGuard",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
 
     private void BtnIgnore_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button btn && btn.Tag is string id)
+        if (ResultsList.SelectedItem is ScanResult result)
         {
-            _settings.IgnoredIds.Add(id);
-            _allResults = new ObservableCollection<ScanResult>(
-                _allResults.Where(r => r.Id != id));
-            ApplyFilters();
-            _logging.LogInformation($"Результат игнорируется: {id}");
+            result.IsIgnored = true;
+            DetailPanel.Visibility = Visibility.Collapsed;
+            _logging.LogInformation($"Результат проигнорирован: {result.Id}");
+        }
+    }
+
+    private void BtnCloseDetail_Click(object sender, RoutedEventArgs e)
+    {
+        DetailPanel.Visibility = Visibility.Collapsed;
+        ResultsList.SelectedItem = null;
+    }
+
+    private void ResultsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ResultsList.SelectedItem is ScanResult)
+        {
+            DetailPanel.Visibility = Visibility.Visible;
+            BtnShowPath.Visibility = Visibility.Collapsed;
+            TxbDetailPath.Text = string.Empty;
+        }
+        else
+        {
+            DetailPanel.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void BtnShowPath_Click(object sender, RoutedEventArgs e)
+    {
+        if (ResultsList.SelectedItem is ScanResult result)
+        {
+            TxbDetailPath.Text = result.FilePath;
+            BtnShowPath.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -181,18 +213,6 @@ public partial class ResultsView : UserControl
             contentFrame?.Navigate(new Views.DashboardView(_settings, _logging, _reportStorage));
             var statusText = win.FindName("StatusText") as TextBlock;
             statusText?.SetText("Готово к работе");
-        }
-    }
-
-    private void BtnShowPath_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button btn)
-        {
-            if (btn.FindName("TxbDetailPath") is TextBlock pathText)
-            {
-                pathText.Visibility = Visibility.Visible;
-                btn.Visibility = Visibility.Collapsed;
-            }
         }
     }
 }
