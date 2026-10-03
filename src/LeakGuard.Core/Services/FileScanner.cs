@@ -184,7 +184,6 @@ public class FileScanner : IScanner
                 foreach (var r in fileResults)
                 {
                     results.Add(r);
-                    ResultFound?.Invoke(r);
                 }
             }
 

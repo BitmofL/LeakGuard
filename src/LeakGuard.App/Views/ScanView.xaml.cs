@@ -25,7 +25,6 @@ public partial class ScanView : UserControl
     private bool _isUnloaded = false;
     private ObservableCollection<ScanResult> _recentFindings = new();
     private int _lastProgressUpdate = -1;
-    private int _lastResultUpdate = -1;
 
     public ScanView(ScanMode mode, AppSettings settings, LoggingService logging, ReportStorage reportStorage)
     {
@@ -56,7 +55,6 @@ public partial class ScanView : UserControl
     private void SetupScannerEvents()
     {
         _scanner.ProgressChanged += OnProgressChanged;
-        _scanner.ResultFound += OnResultFound;
     }
 
     private async void StartScanAsync()
@@ -182,21 +180,7 @@ public partial class ScanView : UserControl
 
     private void OnResultFound(ScanResult result)
     {
-        if (_isUnloaded) return;
-
-        // Throttle: обновляем UI не чаще чем каждые 50 результатов
-        if (_lastResultUpdate > 0 && (_lastResultUpdate % 50) != 0) return;
-        _lastResultUpdate++;
-
-        Application.Current.Dispatcher.BeginInvoke(() =>
-        {
-            if (_isUnloaded) return;
-            _recentFindings.Insert(0, result);
-            if (_recentFindings.Count > 50)
-                _recentFindings.RemoveAt(50);
-
-            UpdateCounts();
-        });
+        // Убрано: больше не вызывается из FileScanner
     }
 
     private void OnScanCompleted(List<ScanResult> results)
@@ -205,6 +189,11 @@ public partial class ScanView : UserControl
         BtnStop.IsEnabled = false;
 
         if (_isUnloaded) return;
+
+        // Показываем последние 50 результатов в ленте
+        var recent = results.Take(50).ToList();
+        _recentFindings = new ObservableCollection<ScanResult>(recent);
+        UpdateCounts();
 
         TxtStatus.Text = $"Сканирование завершено! Найдено {results.Count} результатов.";
         _settings.LastScanDate = DateTime.Now;
