@@ -305,7 +305,7 @@ public class FileScanner : IScanner
 
             if (patterns.Any() || sensitiveKeywords.Any())
             {
-                var maxRisk = patterns.Max(p => p.Risk);
+                var maxRisk = patterns.Any() ? patterns.Max(p => p.Risk) : RiskLevel.Low;
                 var hasSensitiveKeyword = sensitiveKeywords.Count > 0;
 
                 if (hasSensitiveKeyword && maxRisk < RiskLevel.Medium)
