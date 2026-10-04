@@ -203,15 +203,24 @@ public partial class ScanView : UserControl
         // Переход к результатам
         System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            if (_isUnloaded) return;
-            var view = new Views.ResultsView(_settings, _logging, _reportStorage);
-            var mainWindow = Window.GetWindow(this);
-            if (mainWindow is System.Windows.Window win)
+            try
             {
-                var contentFrame = win.FindName("ContentFrame") as System.Windows.Controls.Frame;
-                contentFrame?.Navigate(view);
-                var statusText = win.FindName("StatusText") as TextBlock;
-                statusText?.SetText($"Сканирование завершено: {results.Count} результатов");
+                if (_isUnloaded) return;
+                var view = new Views.ResultsView(_settings, _logging, _reportStorage);
+                view.UpdateResults(results);
+                var mainWindow = Window.GetWindow(this);
+                if (mainWindow is System.Windows.Window win)
+                {
+                    var contentFrame = win.FindName("ContentFrame") as System.Windows.Controls.Frame;
+                    contentFrame?.Navigate(view);
+                    var statusText = win.FindName("StatusText") as TextBlock;
+                    statusText?.SetText($"Сканирование завершено: {results.Count} результатов");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ScanView] Ошибка навигации к ResultsView: {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
             }
         });
     }
